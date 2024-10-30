@@ -1,7 +1,8 @@
-export default function Ship() {
-  let length = 0;
+export default function Ship(type, size) {
+  let length = size;
   let hitsTaken = 0;
   let sunk = false;
+  const shipClass = type;
   const hit = () => {
     hitsTaken++;
   };
@@ -9,7 +10,16 @@ export default function Ship() {
   const isSunk = () => {
     if (hitsTaken >= length) {
       sunk = true;
+      return sunk;
+    } else {
+      sunk = false;
+      return sunk;
     }
   };
-  return { length, hitsTaken, sunk, hit, isSunk };
+
+  const checkDamage = () => {
+    return hitsTaken;
+  };
+
+  return { shipClass, length, sunk, hitsTaken, hit, isSunk, checkDamage };
 }
