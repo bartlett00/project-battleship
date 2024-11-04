@@ -49,11 +49,138 @@ function buildDOM() {
   computerArea.appendChild(computerLabel);
   computerArea.appendChild(computerBoard);
 
+  //container for displaying messages
+  let messageContainer = document.createElement("div");
+  messageContainer.id = "messages";
+
   gameboards.appendChild(playerArea);
   gameboards.appendChild(computerArea);
 
   body.appendChild(gameboards);
+  body.appendChild(messageContainer);
 }
-buildDOM();
 
-function startGame() {}
+function startGame() {
+  //reset message box
+  let messageBox = document.querySelector("#messages");
+  messageBox.textContent = "Click a tile on your opponent's board to attack!";
+
+  let shipList = createShipList();
+  //create players
+  let player = Player("player");
+  let computer = Player("computer");
+
+  //place ships for testing
+  player.gameboard.placeShip(
+    [0, 0],
+    [0, 3],
+    shipList.battleship.name,
+    shipList.battleship.size
+  );
+  player.gameboard.placeShip(
+    [3, 5],
+    [4, 5],
+    shipList.patrolBoat.name,
+    shipList.patrolBoat.size
+  );
+
+  computer.gameboard.placeShip(
+    [0, 0],
+    [0, 3],
+    shipList.battleship.name,
+    shipList.battleship.size
+  );
+  computer.gameboard.placeShip(
+    [3, 5],
+    [4, 5],
+    shipList.patrolBoat.name,
+    shipList.patrolBoat.size
+  );
+
+  //event listener(s) only need to listen for player actions
+  //computer actions will always immediately follow
+
+  let playerBoard = document.querySelector(".player-board");
+  let computerBoard = document.querySelector(".computer-board");
+
+  let tileListPlayer = playerBoard.childNodes;
+  let tileListComp = computerBoard.childNodes;
+
+  function playComputerTurn() {
+    let randomX = Math.floor(Math.random() * 10);
+    let randomY = Math.floor(Math.random() * 10);
+    let attackedTile = player.gameboard.board[randomX][randomY];
+
+    //create new number if attack has already been attempted
+    while (attackedTile.attacked == true) {
+      randomX = Math.floor(Math.random() * 10);
+      randomY = Math.floor(Math.random() * 10);
+      attackedTile = player.gameboard.board[randomX][randomY];
+    }
+
+    let query = `[data-y="${randomY}"][data-x="${randomX}"]`;
+    let randomTile = document.querySelector(query);
+    player.gameboard.receiveAttack(randomX, randomY);
+
+    if (
+      player.gameboard.receiveAttack(randomTile.dataset.x, randomTile.dataset.y)
+    ) {
+      randomTile.classList.add("computer-hit");
+    } else {
+      randomTile.classList.add("computer-miss");
+    }
+    if (player.gameboard.checkDefeat()) {
+      endGame(player.playerName);
+    }
+  }
+
+  function endGame(defeatedPlayer) {
+    //called when a player wins
+    let messageContainer = document.querySelector("#messages");
+    messageContainer.textContent = `${defeatedPlayer} is defeated!`;
+  }
+
+  function attachTileListeners(nodeList, playerType) {
+    for (let i = 0; i < nodeList.length; i++) {
+      let tile = nodeList[i];
+      let tileX = tile.dataset.x;
+      let tileY = tile.dataset.y;
+      let tileOnBoard = playerType.gameboard.board[tileX][tileY];
+      tile.addEventListener("click", () => {
+        //cant interact with the same tile twice
+        if (tileOnBoard.attacked == false) {
+          // playerType.gameboard.receiveAttack(tileX, tileY);
+          if (playerType.gameboard.receiveAttack(tileX, tileY)) {
+            tile.classList.add("hit");
+          } else {
+            tile.classList.add("miss");
+          }
+          if (playerType.gameboard.checkDefeat()) {
+            endGame(playerType.playerName);
+          }
+          playComputerTurn();
+        } else {
+          console.log("cannot play the same tile twice.");
+        }
+      });
+    }
+  }
+  attachTileListeners(tileListComp, computer);
+}
+
+function arrangeFleet() {
+  /*
+    player selects ship type from list
+    selects starting tile
+    selects ending tile
+      
+    until all ships are placed on board
+
+  */
+  let messageBox = document.querySelector("#messages");
+}
+
+//basic layout generates, player places ships, then game starts
+buildDOM();
+//arrangeFleet();
+startGame();

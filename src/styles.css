@@ -25,3 +25,31 @@ body {
   display: grid;
   text-align: center;
 }
+
+.hit {
+  background-color: green;
+}
+
+.miss {
+  background-color: red;
+}
+
+.computer-miss {
+  background-color: gray;
+}
+
+.computer-hit {
+  background-color: red;
+}
+
+#messages {
+  border: 1px solid black;
+  height: fit-content;
+  margin: 10px;
+  text-align: center;
+  width: fit-content;
+  justify-self: center;
+  font-size: 1.5rem;
+  padding: 10px;
+  background-color: gainsboro;
+}

@@ -25,6 +25,7 @@ export default function GameBoard() {
       ship: null,
       hit: false,
       miss: false,
+      attacked: false,
     };
   }
 
@@ -85,11 +86,15 @@ export default function GameBoard() {
   };
 
   const receiveAttack = (x, y) => {
+    board[x][y].attacked = true;
     if (board[x][y].ship !== null) {
       board[x][y].hit = true;
       board[x][y].ship.hit();
+      console.log(board[x][y].ship.checkDamage());
+      return true;
     } else {
       board[x][y].miss = true;
+      return false;
     }
   };
 
@@ -100,8 +105,9 @@ export default function GameBoard() {
         defeatedShips++;
       }
     }
+    console.log({ defeatedShips, fleet });
 
-    if (defeatedShips == fleet.length) {
+    if (defeatedShips === fleet.length) {
       return true;
     } else {
       return false;
