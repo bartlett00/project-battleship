@@ -6,18 +6,20 @@ body {
   border: 1px solid black;
   display: grid;
   grid-template-columns: repeat(10, min-content);
+  opacity: 90%;
 }
 
 .tile {
   border: 1px solid black;
   background-color: white;
-  height: 50px;
-  width: 50px;
+  height: 2rem;
+  width: 2rem;
 }
 
 #gameboards {
   display: flex;
   justify-content: space-evenly;
+  z-index: -1;
 }
 
 #player-area,
@@ -52,4 +54,16 @@ body {
   font-size: 1.5rem;
   padding: 10px;
   background-color: gainsboro;
+}
+
+#end-screen {
+  background-color: transparent;
+  text-align: center;
+  height: inherit;
+  position: relative;
+  z-index: 1;
+}
+
+.player-ship {
+  background-color: blue;
 }

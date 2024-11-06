@@ -3,62 +3,68 @@ import GameBoard from "./gameboard";
 import Player from "./player";
 import createShipList from "./create-ship-list";
 import "./styles.css";
-
+import buildDOM from "./build-dom";
 console.log("test");
 
-function buildDOM() {
-  let body = document.querySelector("body");
-  let gameboards = document.createElement("div");
-  gameboards.id = "gameboards";
+// function buildDOM() {
+//   let body = document.querySelector("body");
+//   let gameboards = document.createElement("div");
+//   gameboards.id = "gameboards";
 
-  function createBoard() {
-    let boardContainer = document.createElement("div");
-    boardContainer.classList.add("board");
-    for (let i = 9; i >= 0; i--) {
-      for (let j = 0; j < 10; j++) {
-        let tile = document.createElement("div");
-        tile.classList.add("tile");
-        tile.dataset.y = i;
-        tile.dataset.x = j;
-        boardContainer.appendChild(tile);
-      }
-    }
-    return boardContainer;
-  }
+//   function createBoard() {
+//     let boardContainer = document.createElement("div");
+//     boardContainer.classList.add("board");
+//     for (let i = 9; i >= 0; i--) {
+//       for (let j = 0; j < 10; j++) {
+//         let tile = document.createElement("div");
+//         tile.classList.add("tile");
+//         tile.dataset.y = i;
+//         tile.dataset.x = j;
+//         boardContainer.appendChild(tile);
+//       }
+//     }
+//     return boardContainer;
+//   }
 
-  let boardLabels = document.createElement("div");
-  boardLabels.id = "board-labels";
-  let playerLabel = document.createElement("div");
-  playerLabel.id = "player-label";
-  playerLabel.textContent = "Your Board";
-  let computerLabel = document.createElement("div");
-  computerLabel.id = "computer-label";
-  computerLabel.textContent = "Opponent's Board";
+//   let boardLabels = document.createElement("div");
+//   boardLabels.id = "board-labels";
+//   let playerLabel = document.createElement("div");
+//   playerLabel.id = "player-label";
+//   playerLabel.textContent = "Your Board";
+//   let computerLabel = document.createElement("div");
+//   computerLabel.id = "computer-label";
+//   computerLabel.textContent = "Opponent's Board";
 
-  let playerBoard = createBoard();
-  playerBoard.classList.add("player-board");
-  let playerArea = document.createElement("div");
-  playerArea.id = "player-area";
-  playerArea.appendChild(playerLabel);
-  playerArea.appendChild(playerBoard);
+//   let playerBoard = createBoard();
+//   playerBoard.classList.add("player-board");
+//   let playerArea = document.createElement("div");
+//   playerArea.id = "player-area";
+//   playerArea.appendChild(playerLabel);
+//   playerArea.appendChild(playerBoard);
 
-  let computerBoard = createBoard();
-  computerBoard.classList.add("computer-board");
-  let computerArea = document.createElement("div");
-  computerArea.id = "computer-area";
-  computerArea.appendChild(computerLabel);
-  computerArea.appendChild(computerBoard);
+//   let computerBoard = createBoard();
+//   computerBoard.classList.add("computer-board");
+//   let computerArea = document.createElement("div");
+//   computerArea.id = "computer-area";
+//   computerArea.appendChild(computerLabel);
+//   computerArea.appendChild(computerBoard);
 
-  //container for displaying messages
-  let messageContainer = document.createElement("div");
-  messageContainer.id = "messages";
+//   //container for displaying messages
+//   let messageContainer = document.createElement("div");
+//   messageContainer.id = "messages";
 
-  gameboards.appendChild(playerArea);
-  gameboards.appendChild(computerArea);
+//   //reset btn
+//   let resetBtn = document.createElement("button");
+//   resetBtn.id = "reset";
+//   resetBtn.textContent = "Reset Game";
 
-  body.appendChild(gameboards);
-  body.appendChild(messageContainer);
-}
+//   gameboards.appendChild(playerArea);
+//   gameboards.appendChild(computerArea);
+
+//   body.appendChild(gameboards);
+//   body.appendChild(messageContainer);
+//   body.appendChild(resetBtn);
+// }
 
 function startGame() {
   //reset message box
@@ -120,8 +126,6 @@ function startGame() {
 
     let query = `[data-y="${randomY}"][data-x="${randomX}"]`;
     let randomTile = document.querySelector(query);
-    player.gameboard.receiveAttack(randomX, randomY);
-
     if (
       player.gameboard.receiveAttack(randomTile.dataset.x, randomTile.dataset.y)
     ) {
@@ -134,50 +138,64 @@ function startGame() {
     }
   }
 
+  let resetButton = document.querySelector("#reset");
+  function resetGame() {
+    //clears body, rebuilds dom, and calls arrangeFleet() + startGame() again
+    let body = document.querySelector("body");
+    body.replaceChildren();
+    buildDOM();
+
+    //arrangeFleet() should start the game
+    startGame();
+  }
+  resetButton.addEventListener("click", () => {
+    if (confirm("Are you sure you want to reset the game?")) {
+      resetGame();
+    }
+  });
+
   function endGame(defeatedPlayer) {
     //called when a player wins
     let messageContainer = document.querySelector("#messages");
     messageContainer.textContent = `${defeatedPlayer} is defeated!`;
+    let transparentDiv = document.createElement("div");
+    transparentDiv.id = "end-screen";
+    transparentDiv.textContent = 'Game over! Click "Reset Game" to play again.';
+    const body = document.querySelector("body");
+    body.appendChild(transparentDiv);
   }
 
   function attachTileListeners(nodeList, playerType) {
+    let gameOver = false;
     for (let i = 0; i < nodeList.length; i++) {
       let tile = nodeList[i];
       let tileX = tile.dataset.x;
       let tileY = tile.dataset.y;
       let tileOnBoard = playerType.gameboard.board[tileX][tileY];
+
       tile.addEventListener("click", () => {
         //cant interact with the same tile twice
-        if (tileOnBoard.attacked == false) {
-          // playerType.gameboard.receiveAttack(tileX, tileY);
-          if (playerType.gameboard.receiveAttack(tileX, tileY)) {
-            tile.classList.add("hit");
+        if (gameOver !== true) {
+          if (tileOnBoard.attacked == false) {
+            if (playerType.gameboard.receiveAttack(tileX, tileY)) {
+              tile.classList.add("hit");
+            } else {
+              tile.classList.add("miss");
+            }
+            if (playerType.gameboard.checkDefeat()) {
+              endGame(playerType.playerName);
+              gameOver = true;
+              return;
+            }
+            playComputerTurn();
           } else {
-            tile.classList.add("miss");
+            console.log("cannot play the same tile twice.");
           }
-          if (playerType.gameboard.checkDefeat()) {
-            endGame(playerType.playerName);
-          }
-          playComputerTurn();
-        } else {
-          console.log("cannot play the same tile twice.");
         }
       });
     }
   }
   attachTileListeners(tileListComp, computer);
-}
-
-function arrangeFleet() {
-  /*
-    player selects ship type from list
-    selects starting tile
-    selects ending tile
-      
-    until all ships are placed on board
-
-  */
-  let messageBox = document.querySelector("#messages");
 }
 
 //basic layout generates, player places ships, then game starts

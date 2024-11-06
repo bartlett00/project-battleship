@@ -58,6 +58,7 @@ export default function GameBoard() {
 
     let newShip = Ship(shipType, shipSize);
     fleet.push(newShip);
+    let tile;
 
     if (startX == endX) {
       if (startY < endY) {
