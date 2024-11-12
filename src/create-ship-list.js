@@ -18,7 +18,7 @@ export default function createShipList() {
       size: 3,
     },
     patrolBoat: {
-      name: "Patrol Boat",
+      name: "PatrolBoat",
       size: 2,
     },
   };

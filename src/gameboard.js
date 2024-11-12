@@ -1,23 +1,6 @@
 import Ship from "./ship";
 
 export default function GameBoard() {
-  /*
-      placeShip method
-        creates new ship
-        saves ship across specific coordinates
-
-      receiveAttack method
-        accepts pair of coordinates
-        if coordinates contain part of a ship
-          call hit function on correct ship
-        else
-          record coords of miss
-
-      tracks missed shots
-      checkForDefeat method
-        if all ships are sunk
-          return true
-    */
   function createTile(row, col) {
     return {
       x: row,
@@ -34,7 +17,7 @@ export default function GameBoard() {
     for (let i = 0; i < 10; i++) {
       let column = [];
       for (let j = 0; j < 10; j++) {
-        let newTile = createTile(j, i);
+        let newTile = createTile(i, j);
         column.push(newTile);
       }
       board.push(column);
@@ -53,12 +36,11 @@ export default function GameBoard() {
     const endY = end[1];
 
     if (startX < 0 || startY < 0 || endX < 0 || endY < 0) {
-      throw new Error("cannot place ship outside of board!");
+      console.log("cannot place ship outside of board!");
     }
 
     let newShip = Ship(shipType, shipSize);
     fleet.push(newShip);
-    let tile;
 
     if (startX == endX) {
       if (startY < endY) {
@@ -81,9 +63,6 @@ export default function GameBoard() {
         }
       }
     }
-    //if x is the same, only increment/decrement y
-    //if y is the same, only increment/decrement x
-    //ships can only be placed vertically or horizontally
   };
 
   const receiveAttack = (x, y) => {

@@ -50,10 +50,22 @@ export default function buildDOM() {
   resetBtn.id = "reset";
   resetBtn.textContent = "Reset Game";
 
+  //randomize player ships btn
+  let randomizeBtn = document.createElement("button");
+  randomizeBtn.id = "randomize-btn";
+  randomizeBtn.classList.add("btn");
+  randomizeBtn.textContent = "Randomize Fleet";
+
+  //btn container
+  let btnContainer = document.createElement("div");
+  btnContainer.id = "btn-container";
+
   gameboards.appendChild(playerArea);
   gameboards.appendChild(computerArea);
 
   body.appendChild(gameboards);
   body.appendChild(messageContainer);
-  body.appendChild(resetBtn);
+  btnContainer.appendChild(resetBtn);
+  btnContainer.appendChild(randomizeBtn);
+  body.appendChild(btnContainer);
 }

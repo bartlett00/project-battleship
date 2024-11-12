@@ -1,115 +1,29 @@
-import Ship from "./ship";
-import GameBoard from "./gameboard";
 import Player from "./player";
-import createShipList from "./create-ship-list";
 import "./styles.css";
 import buildDOM from "./build-dom";
-console.log("test");
-
-// function buildDOM() {
-//   let body = document.querySelector("body");
-//   let gameboards = document.createElement("div");
-//   gameboards.id = "gameboards";
-
-//   function createBoard() {
-//     let boardContainer = document.createElement("div");
-//     boardContainer.classList.add("board");
-//     for (let i = 9; i >= 0; i--) {
-//       for (let j = 0; j < 10; j++) {
-//         let tile = document.createElement("div");
-//         tile.classList.add("tile");
-//         tile.dataset.y = i;
-//         tile.dataset.x = j;
-//         boardContainer.appendChild(tile);
-//       }
-//     }
-//     return boardContainer;
-//   }
-
-//   let boardLabels = document.createElement("div");
-//   boardLabels.id = "board-labels";
-//   let playerLabel = document.createElement("div");
-//   playerLabel.id = "player-label";
-//   playerLabel.textContent = "Your Board";
-//   let computerLabel = document.createElement("div");
-//   computerLabel.id = "computer-label";
-//   computerLabel.textContent = "Opponent's Board";
-
-//   let playerBoard = createBoard();
-//   playerBoard.classList.add("player-board");
-//   let playerArea = document.createElement("div");
-//   playerArea.id = "player-area";
-//   playerArea.appendChild(playerLabel);
-//   playerArea.appendChild(playerBoard);
-
-//   let computerBoard = createBoard();
-//   computerBoard.classList.add("computer-board");
-//   let computerArea = document.createElement("div");
-//   computerArea.id = "computer-area";
-//   computerArea.appendChild(computerLabel);
-//   computerArea.appendChild(computerBoard);
-
-//   //container for displaying messages
-//   let messageContainer = document.createElement("div");
-//   messageContainer.id = "messages";
-
-//   //reset btn
-//   let resetBtn = document.createElement("button");
-//   resetBtn.id = "reset";
-//   resetBtn.textContent = "Reset Game";
-
-//   gameboards.appendChild(playerArea);
-//   gameboards.appendChild(computerArea);
-
-//   body.appendChild(gameboards);
-//   body.appendChild(messageContainer);
-//   body.appendChild(resetBtn);
-// }
+import randomizeFleet from "./randomize-fleetV2";
 
 function startGame() {
   //reset message box
   let messageBox = document.querySelector("#messages");
   messageBox.textContent = "Click a tile on your opponent's board to attack!";
 
-  let shipList = createShipList();
   //create players
   let player = Player("player");
   let computer = Player("computer");
+  randomizeFleet(player, computer);
 
-  //place ships for testing
-  player.gameboard.placeShip(
-    [0, 0],
-    [0, 3],
-    shipList.battleship.name,
-    shipList.battleship.size
-  );
-  player.gameboard.placeShip(
-    [3, 5],
-    [4, 5],
-    shipList.patrolBoat.name,
-    shipList.patrolBoat.size
-  );
+  document.querySelector("#randomize-btn").addEventListener("click", () => {
+    if (
+      confirm(
+        "This will reset the game. Are you sure you want to randomize the board?"
+      )
+    ) {
+      resetGame();
+    }
+  });
 
-  computer.gameboard.placeShip(
-    [0, 0],
-    [0, 3],
-    shipList.battleship.name,
-    shipList.battleship.size
-  );
-  computer.gameboard.placeShip(
-    [3, 5],
-    [4, 5],
-    shipList.patrolBoat.name,
-    shipList.patrolBoat.size
-  );
-
-  //event listener(s) only need to listen for player actions
-  //computer actions will always immediately follow
-
-  let playerBoard = document.querySelector(".player-board");
   let computerBoard = document.querySelector(".computer-board");
-
-  let tileListPlayer = playerBoard.childNodes;
   let tileListComp = computerBoard.childNodes;
 
   function playComputerTurn() {
@@ -138,17 +52,13 @@ function startGame() {
     }
   }
 
-  let resetButton = document.querySelector("#reset");
   function resetGame() {
     //clears body, rebuilds dom, and calls arrangeFleet() + startGame() again
-    let body = document.querySelector("body");
-    body.replaceChildren();
+    document.querySelector("body").replaceChildren();
     buildDOM();
-
-    //arrangeFleet() should start the game
     startGame();
   }
-  resetButton.addEventListener("click", () => {
+  document.querySelector("#reset").addEventListener("click", () => {
     if (confirm("Are you sure you want to reset the game?")) {
       resetGame();
     }
@@ -200,5 +110,4 @@ function startGame() {
 
 //basic layout generates, player places ships, then game starts
 buildDOM();
-//arrangeFleet();
 startGame();

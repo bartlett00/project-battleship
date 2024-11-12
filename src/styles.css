@@ -27,21 +27,21 @@ body {
   display: grid;
   text-align: center;
 }
+.player-ship {
+  background-color: blue;
+}
 
 .hit {
   background-color: green;
 }
 
-.miss {
+.miss,
+.computer-hit {
   background-color: red;
 }
 
 .computer-miss {
   background-color: gray;
-}
-
-.computer-hit {
-  background-color: red;
 }
 
 #messages {
@@ -64,6 +64,7 @@ body {
   z-index: 1;
 }
 
-.player-ship {
-  background-color: blue;
+#btn-container {
+  display: flex;
+  justify-content: space-evenly;
 }
